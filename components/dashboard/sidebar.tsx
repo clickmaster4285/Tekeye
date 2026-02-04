@@ -1,36 +1,18 @@
 "use client"
 
 import React from "react"
-
 import { useState, useEffect } from "react"
 import { usePathname } from "next/navigation"
 import {
   LayoutDashboard,
   UserCheck,
-  ClipboardList,
+  Package,
   Users,
-  Upload,
-  Camera,
-  QrCode,
-  Workflow,
-  Monitor,
   Eye,
-  Bell,
-  Shield,
-  Lock,
-  FileText,
-  UserCog,
-  Settings,
-  MessageSquare,
-  UserPlus,
-  Cog,
-  Plug,
-  Smartphone,
-  Server,
-  Key,
   ChevronDown,
   ChevronRight,
-  CalendarDays,
+  Brain,
+  Cog,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
@@ -50,20 +32,41 @@ interface MenuSection {
 
 export function Sidebar() {
   const pathname = usePathname()
-  const [expandedItems, setExpandedItems] = useState<string[]>(["Visitor Registration"])
+  const [expandedItems, setExpandedItems] = useState<string[]>(["VMS"])
 
   // Define which routes belong to which parent menu
   const routeToParentMap: Record<string, string> = {
-    "/pre-registration": "Visitor Registration",
-    "/walk-in-registration": "Visitor Registration",
-    "/streamed-upload": "Visitor Registration",
-    "/photo-capture": "Visitor Registration",
-    "/qr-code-generation": "Visitor Registration",
-    "/appointment-scheduling": "Appointment Scheduling",
-    "/time-slot-booking": "Appointment Scheduling",
-    "/host-selection": "Appointment Scheduling",
-    "/visit-purpose": "Appointment Scheduling",
-    "/calendar-view": "Appointment Scheduling",
+    "/": "Dashboard",
+    "/pre-registration": "VMS",
+    "/walk-in-registration": "VMS",
+    "/streamed-upload": "VMS",
+    "/photo-capture": "VMS",
+    "/qr-code-generation": "VMS",
+    "/appointment-scheduling": "VMS",
+    "/time-slot-booking": "VMS",
+    "/host-selection": "VMS",
+    "/visit-purpose": "VMS",
+    "/calendar-view": "VMS",
+    "/warehouse-setup": "WMS",
+    "/zone-location-management": "WMS",
+    "/storage-allocation": "WMS",
+    "/inventory-tracking": "WMS",
+    "/stock-reconciliation": "WMS",
+    "/camera-integration": "WMS",
+    "/analytics-dashboard": "AI Analytics",
+    "/reports": "AI Analytics",
+    "/predictive-insights": "AI Analytics",
+    "/data-visualization": "AI Analytics",
+    "/employees": "HR",
+    "/attendance": "HR",
+    "/leave-management": "HR",
+    "/payroll": "HR",
+    "/recruitment": "HR",
+    "/general-settings": "System configuration",
+    "/user-role-management": "System configuration",
+    "/integrations": "System configuration",
+    "/notifications": "System configuration",
+    "/security-access": "System configuration",
   }
 
   // Auto-expand the correct menu based on current pathname
@@ -82,127 +85,73 @@ export function Sidebar() {
 
   const menuSections: MenuSection[] = [
     {
-      title: "MODULES",
+      title: "MAIN MODULES",
       items: [
-        { icon: <LayoutDashboard size={18} />, label: "Dashboard", href: "#" },
         {
-          icon: <UserCheck size={18} />,
-          label: "Visitor Registration",
-          active: true,
-          children: [
-            { label: "Pre-Registration Status", href: "/pre-registration" },
-            { label: "Walk-In Registration", href: "/walk-in-registration" },
-            { label: "Streamed Upload", href: "/streamed-upload" },
-            { label: "Photo Capture", href: "/photo-capture" },
-            { label: "QR Code Generation", href: "/qr-code-generation" },
-          ],
+          icon: <LayoutDashboard size={18} />,
+          label: "Dashboard",
+          href: "/",
         },
         {
-          icon: <CalendarDays size={18} />,
-          label: "Appointment Scheduling",
-          href: "/appointment-scheduling",
+          icon: <UserCheck size={18} />,
+          label: "VMS",
           children: [
+            { label: "Pre-Registration", href: "/pre-registration" },
+            { label: "Walk-In Registration", href: "/walk-in-registration" },
+            { label: "Document Upload", href: "/streamed-upload" },
+            { label: "Photo Capture", href: "/photo-capture" },
+            { label: "QR Code Generation", href: "/qr-code-generation" },
+            { label: "Appointment Scheduling", href: "/appointment-scheduling" },
             { label: "Time Slot Booking", href: "/time-slot-booking" },
             { label: "Host Selection", href: "/host-selection" },
             { label: "Visit Purpose", href: "/visit-purpose" },
             { label: "Calendar View", href: "/calendar-view" },
           ],
         },
-      ],
-    },
-    {
-      title: "INTEGRATIONS",
-      items: [
-        { icon: <Workflow size={18} />, label: "Visitor Workflow", href: "#" },
-        { icon: <Monitor size={18} />, label: "Kiosk Setup", href: "#" },
-        { icon: <Eye size={18} />, label: "Visitor Hedging", href: "#" },
-      ],
-    },
-    {
-      title: "SETTINGS",
-      items: [
-        { icon: <Bell size={18} />, label: "Notifications", href: "#" },
         {
-          icon: <Shield size={18} />,
-          label: "Guard & Reception Panel",
-          children: [{ label: "Panel Settings", href: "#" }],
-        },
-        {
-          icon: <Lock size={18} />,
-          label: "Reports & Security",
+          icon: <Package size={18} />,
+          label: "WMS",
           children: [
-            { label: "Access Scheduling", href: "#" },
-            { label: "Access Control", href: "#" },
-            { label: "AI & Advanced Security", href: "#" },
+            { label: "Warehouse Setup", href: "/warehouse-setup" },
+            { label: "Zone & Location Management", href: "/zone-location-management" },
+            { label: "Storage Allocation", href: "/storage-allocation" },
+            { label: "Inventory Tracking", href: "/inventory-tracking" },
+            { label: "Stock Reconciliation", href: "/stock-reconciliation" },
+            { label: "Camera Integration", href: "/camera-integration" },
           ],
         },
         {
-          icon: <FileText size={18} />,
-          label: "Front & Document",
-          children: [{ label: "Document Settings", href: "#" }],
+          icon: <Brain size={18} />,
+          label: "AI Analytics",
+          children: [
+            { label: "Analytics Dashboard", href: "/analytics-dashboard" },
+            { label: "Reports", href: "/reports" },
+            { label: "Predictive Insights", href: "/predictive-insights" },
+            { label: "Data Visualization", href: "/data-visualization" },
+          ],
         },
         {
-          icon: <UserCog size={18} />,
-          label: "Guard & Reception Panel",
-          children: [{ label: "Guard Settings", href: "#" }],
-        },
-        {
-          icon: <Shield size={18} />,
-          label: "Reports & Security",
-          children: [{ label: "Security Reports", href: "#" }],
-        },
-      ],
-    },
-    {
-      title: "",
-      items: [
-        {
-          icon: <FileText size={18} />,
-          label: "Reports & Analytics",
-          children: [{ label: "Analytics Dashboard", href: "#" }],
-        },
-        {
-          icon: <ClipboardList size={18} />,
-          label: "Audit & Compliance",
-          children: [{ label: "Compliance Reports", href: "#" }],
-        },
-        {
-          icon: <MessageSquare size={18} />,
-          label: "Communication",
-          children: [{ label: "Messages", href: "#" }],
-        },
-      ],
-    },
-    {
-      title: "",
-      items: [
-        {
-          icon: <UserPlus size={18} />,
-          label: "User & Role Management",
-          children: [{ label: "Users", href: "#" }],
+          icon: <Users size={18} />,
+          label: "HR",
+          children: [
+            { label: "Employees", href: "/employees" },
+            { label: "Attendance", href: "/attendance" },
+            { label: "Leave Management", href: "/leave-management" },
+            { label: "Payroll", href: "/payroll" },
+            { label: "Recruitment", href: "/recruitment" },
+          ],
         },
         {
           icon: <Cog size={18} />,
-          label: "System Configuration",
-          children: [{ label: "Settings", href: "#" }],
+          label: "System configuration",
+          children: [
+            { label: "General Settings", href: "/general-settings" },
+            { label: "User & Role Management", href: "/user-role-management" },
+            { label: "Integrations", href: "/integrations" },
+            { label: "Notifications", href: "/notifications" },
+            { label: "Security & Access", href: "/security-access" },
+          ],
         },
-        {
-          icon: <Plug size={18} />,
-          label: "Integration",
-          children: [{ label: "Integrations", href: "#" }],
-        },
-        {
-          icon: <Smartphone size={18} />,
-          label: "Mobile Application",
-          children: [{ label: "Mobile Settings", href: "#" }],
-        },
-        {
-          icon: <Server size={18} />,
-          label: "System Administration",
-          children: [{ label: "Administration", href: "#" }],
-        },
-        { icon: <Key size={18} />, label: "API Access", href: "#" },
-        { icon: <Settings size={18} />, label: "Settings", href: "#" },
       ],
     },
   ]
@@ -230,20 +179,20 @@ export function Sidebar() {
             )}
             {section.items.map((item, itemIndex) => (
               <div key={itemIndex}>
-                <button
-                  onClick={() => item.children && toggleExpand(item.label)}
-                  className={cn(
-                    "w-full flex items-center justify-between px-3 py-2 rounded-md text-sm transition-all duration-200",
-                    item.active
-                      ? "bg-gradient-to-r from-[#3b82f6]/15 via-[#3b82f6]/10 to-transparent text-[#3b82f6] font-medium"
-                      : "text-muted-foreground hover:bg-gradient-to-r hover:from-[#3b82f6]/10 hover:via-[#3b82f6]/5 hover:to-transparent hover:text-[#3b82f6] hover:translate-x-1"
-                  )}
-                >
-                  <div className="flex items-center gap-3">
-                    {item.icon}
-                    <span className="whitespace-nowrap">{item.label}</span>
-                  </div>
-                  {item.children && (
+                {item.children ? (
+                  <button
+                    onClick={() => toggleExpand(item.label)}
+                    className={cn(
+                      "w-full flex items-center justify-between px-3 py-2 rounded-md text-sm transition-all duration-200",
+                      item.children.some((c) => c.href === pathname)
+                        ? "bg-gradient-to-r from-[#3b82f6]/15 via-[#3b82f6]/10 to-transparent text-[#3b82f6] font-medium"
+                        : "text-muted-foreground hover:bg-gradient-to-r hover:from-[#3b82f6]/10 hover:via-[#3b82f6]/5 hover:to-transparent hover:text-[#3b82f6] hover:translate-x-1"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      {item.icon}
+                      <span className="whitespace-nowrap text-left">{item.label}</span>
+                    </div>
                     <span>
                       {expandedItems.includes(item.label) ? (
                         <ChevronDown size={16} />
@@ -251,8 +200,21 @@ export function Sidebar() {
                         <ChevronRight size={16} />
                       )}
                     </span>
-                  )}
-                </button>
+                  </button>
+                ) : (
+                  <Link
+                    href={item.href ?? "#"}
+                    className={cn(
+                      "w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-all duration-200",
+                      pathname === item.href
+                        ? "bg-gradient-to-r from-[#3b82f6]/15 via-[#3b82f6]/10 to-transparent text-[#3b82f6] font-medium"
+                        : "text-muted-foreground hover:bg-gradient-to-r hover:from-[#3b82f6]/10 hover:via-[#3b82f6]/5 hover:to-transparent hover:text-[#3b82f6] hover:translate-x-1"
+                    )}
+                  >
+                    {item.icon}
+                    <span className="whitespace-nowrap">{item.label}</span>
+                  </Link>
+                )}
                 {item.children && expandedItems.includes(item.label) && (
                   <div className="ml-6 mt-1 space-y-1">
                     {item.children.map((child, childIndex) => (
@@ -261,8 +223,8 @@ export function Sidebar() {
                         href={child.href}
                         className={cn(
                           "block px-3 py-1.5 text-sm rounded-md transition-all duration-200",
-                          child.active
-                            ? "text-[#3b82f6] font-medium"
+                          pathname === child.href
+                            ? "text-[#3b82f6] font-medium bg-[#3b82f6]/5"
                             : "text-muted-foreground hover:text-[#3b82f6] hover:bg-[#3b82f6]/5 hover:translate-x-1"
                         )}
                       >
