@@ -1,10 +1,25 @@
 "use client"
 
-import { Search, Bell, ChevronDown } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { Search, Bell, ChevronDown, LogOut } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { clearAuth } from "@/lib/auth"
 
 export function Header() {
+  const router = useRouter()
+
+  const handleLogout = () => {
+    clearAuth()
+    router.replace("/login")
+  }
+
   return (
     <header className="h-16 border-b border-border bg-background px-6 flex items-center justify-between">
       {/* Search */}
@@ -24,16 +39,26 @@ export function Header() {
           <span className="absolute top-1 right-1 w-2 h-2 bg-[#3b82f6] rounded-full"></span>
         </button>
 
-        <div className="flex items-center gap-3 cursor-pointer">
-          <Avatar className="h-9 w-9">
-            <AvatarImage src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face" />
-            <AvatarFallback>SM</AvatarFallback>
-          </Avatar>
-          <div className="flex items-center gap-1">
-            <span className="text-sm font-medium text-foreground">Sarah Martin</span>
-            <ChevronDown className="h-4 w-4 text-muted-foreground" />
-          </div>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <div className="flex items-center gap-3 cursor-pointer rounded-lg px-2 py-1.5 hover:bg-muted/80 transition-colors">
+              <Avatar className="h-9 w-9">
+                <AvatarImage src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face" />
+                <AvatarFallback>SM</AvatarFallback>
+              </Avatar>
+              <div className="flex items-center gap-1">
+                <span className="text-sm font-medium text-foreground">Sarah Martin</span>
+                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              </div>
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive cursor-pointer">
+              <LogOut className="mr-2 h-4 w-4" />
+              Log out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   )
