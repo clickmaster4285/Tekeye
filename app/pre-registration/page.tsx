@@ -79,7 +79,7 @@ export default function PreRegistrationPage() {
   return (
     <div className="flex min-h-screen bg-[#f8fafc]">
       <Sidebar activePath="/pre-registration" />
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col ml-[240px] min-w-0">
         <Header />
         <main className="flex-1 p-6">
           {/* Breadcrumb */}

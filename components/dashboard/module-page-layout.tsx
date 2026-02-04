@@ -33,7 +33,7 @@ export function ModulePageLayout({
   return (
     <div className="flex min-h-screen bg-[#f8fafc]">
       <Sidebar />
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 ml-[240px]">
         <Header />
         <main className="flex-1 p-6">
           <Breadcrumb className="mb-4">

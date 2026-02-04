@@ -12,7 +12,7 @@ export default function Dashboard() {
       <Sidebar />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col ml-[240px] min-w-0">
         {/* Header */}
         <Header />
 

@@ -30,82 +30,82 @@ interface MenuSection {
   items: MenuItem[]
 }
 
+const routeToParentMap: Record<string, string> = {
+  "/": "Dashboard",
+  "/pre-registration": "VMS",
+  "/walk-in-registration": "VMS",
+  "/streamed-upload": "VMS",
+  "/photo-capture": "VMS",
+  "/qr-code-generation": "VMS",
+  "/appointment-scheduling": "VMS",
+  "/time-slot-booking": "VMS",
+  "/host-selection": "VMS",
+  "/visit-purpose": "VMS",
+  "/calendar-view": "VMS",
+  "/warehouse-setup": "WMS",
+  "/zone-location-management": "WMS",
+  "/storage-allocation": "WMS",
+  "/inventory-tracking": "WMS",
+  "/stock-reconciliation": "WMS",
+  "/camera-integration": "WMS",
+  "/operations-dashboard": "WMS",
+  "/analytics-dashboard": "WMS",
+  "/live-monitoring": "WMS",
+  "/new-seizure-entry": "WMS",
+  "/jcp-toll-plaza-entry": "WMS",
+  "/goods-receipt-handover": "WMS",
+  "/ai-item-cataloging": "WMS",
+  "/seizure-register": "WMS",
+  "/fir-registration": "WMS",
+  "/case-file-creation": "WMS",
+  "/court-proceedings": "WMS",
+  "/legal-documents": "WMS",
+  "/case-status-tracking": "WMS",
+  "/inter-collectorate-transfer": "WMS",
+  "/internal-movement": "WMS",
+  "/handover-requests": "WMS",
+  "/double-authentication": "WMS",
+  "/transfer-tracking": "WMS",
+  "/perishable-register": "WMS",
+  "/expiry-tracking": "WMS",
+  "/priority-disposal-queue": "WMS",
+  "/destruction-orders": "WMS",
+  "/lot-creation": "WMS",
+  "/item-valuation": "WMS",
+  "/aso-portal-sync": "WMS",
+  "/bidding-management": "WMS",
+  "/sale-completion": "WMS",
+  "/revenue-reports": "WMS",
+  "/camera-management": "WMS",
+  "/object-detection": "WMS",
+  "/anpr-settings": "WMS",
+  "/anomaly-detection": "WMS",
+  "/reports": "AI Analytics",
+  "/predictive-insights": "AI Analytics",
+  "/data-visualization": "AI Analytics",
+  "/employees": "HR",
+  "/attendance": "HR",
+  "/leave-management": "HR",
+  "/payroll": "HR",
+  "/recruitment": "HR",
+  "/general-settings": "System configuration",
+  "/user-role-management": "System configuration",
+  "/integrations": "System configuration",
+  "/notifications": "System configuration",
+  "/security-access": "System configuration",
+}
+
 export function Sidebar() {
   const pathname = usePathname()
-  const [expandedItems, setExpandedItems] = useState<string[]>(["VMS"])
+  const [expandedItems, setExpandedItems] = useState<string[]>(() => {
+    const parent = routeToParentMap[pathname]
+    return parent ? [parent] : []
+  })
 
-  // Define which routes belong to which parent menu
-  const routeToParentMap: Record<string, string> = {
-    "/": "Dashboard",
-    "/pre-registration": "VMS",
-    "/walk-in-registration": "VMS",
-    "/streamed-upload": "VMS",
-    "/photo-capture": "VMS",
-    "/qr-code-generation": "VMS",
-    "/appointment-scheduling": "VMS",
-    "/time-slot-booking": "VMS",
-    "/host-selection": "VMS",
-    "/visit-purpose": "VMS",
-    "/calendar-view": "VMS",
-    "/warehouse-setup": "WMS",
-    "/zone-location-management": "WMS",
-    "/storage-allocation": "WMS",
-    "/inventory-tracking": "WMS",
-    "/stock-reconciliation": "WMS",
-    "/camera-integration": "WMS",
-    "/operations-dashboard": "WMS",
-    "/analytics-dashboard": "WMS",
-    "/live-monitoring": "WMS",
-    "/new-seizure-entry": "WMS",
-    "/jcp-toll-plaza-entry": "WMS",
-    "/goods-receipt-handover": "WMS",
-    "/ai-item-cataloging": "WMS",
-    "/seizure-register": "WMS",
-    "/fir-registration": "WMS",
-    "/case-file-creation": "WMS",
-    "/court-proceedings": "WMS",
-    "/legal-documents": "WMS",
-    "/case-status-tracking": "WMS",
-    "/inter-collectorate-transfer": "WMS",
-    "/internal-movement": "WMS",
-    "/handover-requests": "WMS",
-    "/double-authentication": "WMS",
-    "/transfer-tracking": "WMS",
-    "/perishable-register": "WMS",
-    "/expiry-tracking": "WMS",
-    "/priority-disposal-queue": "WMS",
-    "/destruction-orders": "WMS",
-    "/lot-creation": "WMS",
-    "/item-valuation": "WMS",
-    "/aso-portal-sync": "WMS",
-    "/bidding-management": "WMS",
-    "/sale-completion": "WMS",
-    "/revenue-reports": "WMS",
-    "/camera-management": "WMS",
-    "/object-detection": "WMS",
-    "/anpr-settings": "WMS",
-    "/anomaly-detection": "WMS",
-    "/reports": "AI Analytics",
-    "/predictive-insights": "AI Analytics",
-    "/data-visualization": "AI Analytics",
-    "/employees": "HR",
-    "/attendance": "HR",
-    "/leave-management": "HR",
-    "/payroll": "HR",
-    "/recruitment": "HR",
-    "/general-settings": "System configuration",
-    "/user-role-management": "System configuration",
-    "/integrations": "System configuration",
-    "/notifications": "System configuration",
-    "/security-access": "System configuration",
-  }
-
-  // Auto-expand the correct menu based on current pathname
+  // Keep only the current route's module expanded when pathname changes
   useEffect(() => {
     const parentMenu = routeToParentMap[pathname]
-    if (parentMenu && !expandedItems.includes(parentMenu)) {
-      setExpandedItems((prev) => [...prev, parentMenu])
-    }
+    setExpandedItems(parentMenu ? [parentMenu] : [])
   }, [pathname])
 
   const toggleExpand = (label: string) => {
@@ -222,9 +222,9 @@ export function Sidebar() {
   ]
 
   return (
-    <aside className="w-[240px] min-h-screen bg-background border-r border-border flex flex-col">
+    <aside className="fixed inset-y-0 left-0 z-30 w-[240px] h-screen bg-background border-r border-border flex flex-col shrink-0">
       {/* Logo */}
-      <div className="p-4 border-b border-border">
+      <div className="p-4 border-b border-border shrink-0">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-[#3b82f6] flex items-center justify-center">
             <Eye className="w-5 h-5 text-white" />
@@ -233,8 +233,8 @@ export function Sidebar() {
         </div>
       </div>
 
-      {/* Menu */}
-      <nav className="flex-1 overflow-y-auto py-2 px-2">
+      {/* Menu - scrollable when content overflows */}
+      <nav className="flex-1 min-h-0 overflow-y-auto py-2 px-2">
         {menuSections.map((section, sectionIndex) => (
           <div key={sectionIndex} className="mb-2">
             {section.title && (
@@ -305,7 +305,7 @@ export function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-border">
+      <div className="p-4 border-t border-border shrink-0">
         <p className="text-xs text-muted-foreground">© 2024 Powered by OSIEMENS</p>
       </div>
     </aside>
