@@ -129,13 +129,7 @@ export function Sidebar() {
           children: [
             { label: "Pre-Registration", href: "/pre-registration" },
             { label: "Walk-In Registration", href: "/walk-in-registration" },
-            { label: "Document Upload", href: "/streamed-upload" },
-            { label: "Photo Capture", href: "/photo-capture" },
-            { label: "QR Code Generation", href: "/qr-code-generation" },
             { label: "Appointment Scheduling", href: "/appointment-scheduling" },
-            { label: "Time Slot Booking", href: "/time-slot-booking" },
-            { label: "Host Selection", href: "/host-selection" },
-            { label: "Visit Purpose", href: "/visit-purpose" },
             { label: "Calendar View", href: "/calendar-view" },
           ],
         },

@@ -1,5 +1,6 @@
 "use client"
 
+import { useRef, useState, useEffect, useCallback } from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -10,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
-import { Camera, MapPin } from "lucide-react"
+import { Camera, MapPin, Video, VideoOff, AlertCircle } from "lucide-react"
 
 interface WalkInStep1Props {
   formData: {
@@ -32,6 +33,79 @@ export function WalkInStep1BasicInfo({
   formData,
   updateFormData,
 }: WalkInStep1Props) {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [showCameraPanel, setShowCameraPanel] = useState(false)
+  const [stream, setStream] = useState<MediaStream | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const stopCamera = useCallback(() => {
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop())
+      setStream(null)
+    }
+  }, [stream])
+
+  useEffect(() => {
+    return () => {
+      stopCamera()
+    }
+  }, [stopCamera])
+
+  const startCamera = async () => {
+    setError(null)
+    setIsLoading(true)
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: "user",
+          width: { ideal: 640 },
+          height: { ideal: 480 },
+        },
+        audio: false,
+      })
+      setStream(mediaStream)
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream
+      }
+    } catch (err) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Could not access camera. Please allow camera permission and try again."
+      setError(message)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleCapture = () => {
+    if (!videoRef.current || !stream || !canvasRef.current) return
+    const video = videoRef.current
+    const canvas = canvasRef.current
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+    canvas.width = video.videoWidth
+    canvas.height = video.videoHeight
+    ctx.drawImage(video, 0, 0)
+    const dataUrl = canvas.toDataURL("image/jpeg", 0.92)
+    updateFormData({ photoCapture: dataUrl })
+    stopCamera()
+    setShowCameraPanel(false)
+  }
+
+  const openPhotoCapture = () => {
+    setShowCameraPanel(true)
+    setError(null)
+  }
+
+  const closePhotoCapture = () => {
+    stopCamera()
+    setShowCameraPanel(false)
+    setError(null)
+  }
+
   return (
     <div className="space-y-6">
       <h2 className="text-lg font-semibold text-foreground">
@@ -130,20 +204,101 @@ export function WalkInStep1BasicInfo({
           <div className="relative">
             <Input
               placeholder="Take Photo"
-              value={formData.photoCapture}
-              onChange={(e) => updateFormData({ photoCapture: e.target.value })}
-              className="bg-background pr-10"
+              value={formData.photoCapture ? "Photo captured" : ""}
               readOnly
+              onClick={openPhotoCapture}
+              className="bg-background pr-10 cursor-pointer"
             />
             <Button
               type="button"
               variant="ghost"
               size="icon"
+              onClick={openPhotoCapture}
               className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
             >
               <Camera className="h-4 w-4 text-muted-foreground" />
             </Button>
           </div>
+          {formData.photoCapture && (
+            <div className="mt-2 flex items-center gap-2">
+              <img
+                src={formData.photoCapture}
+                alt="Captured"
+                className="h-14 w-14 rounded object-cover border border-border"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={openPhotoCapture}
+                className="text-xs"
+              >
+                Retake
+              </Button>
+            </div>
+          )}
+          {/* Camera panel - inline below field when opened */}
+          {showCameraPanel && (
+            <div className="mt-4 p-4 rounded-lg border border-border bg-muted/20 space-y-3">
+              {error && (
+                <div className="flex items-center gap-2 text-destructive text-sm py-2 px-3 bg-destructive/10 rounded-md">
+                  <AlertCircle className="h-4 w-4 shrink-0" />
+                  <span>{error}</span>
+                </div>
+              )}
+              {!stream && !error && (
+                <div className="flex flex-col items-start gap-3">
+                  <p className="text-sm text-muted-foreground">
+                    Click Start Camera to open your camera, then capture your photo.
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={startCamera}
+                      disabled={isLoading}
+                      className="bg-[#3b82f6] hover:bg-[#2563eb] text-white"
+                    >
+                      {isLoading ? "Opening…" : <><Video className="w-4 h-4 mr-2" /> Start Camera</>}
+                    </Button>
+                    <Button type="button" size="sm" variant="outline" onClick={closePhotoCapture}>
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              )}
+              {stream && (
+                <div className="space-y-3">
+                  <div className="relative rounded overflow-hidden bg-black aspect-video max-w-sm">
+                    <video
+                      ref={videoRef}
+                      autoPlay
+                      playsInline
+                      muted
+                      className="w-full h-full object-cover"
+                      style={{ transform: "scaleX(-1)" }}
+                    />
+                  </div>
+                  <canvas ref={canvasRef} className="hidden" />
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={handleCapture}
+                      className="bg-[#3b82f6] hover:bg-[#2563eb] text-white"
+                    >
+                      <Camera className="w-4 h-4 mr-2" />
+                      Capture Photo
+                    </Button>
+                    <Button type="button" size="sm" variant="outline" onClick={() => { stopCamera(); setShowCameraPanel(false); }}>
+                      <VideoOff className="w-4 h-4 mr-2" />
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Visit Purpose */}

@@ -12,9 +12,10 @@ interface StepIndicatorProps {
 
 export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
   return (
-    <div className="flex items-center justify-between">
-      {steps.map((step, index) => (
-        <div key={step.number} className="flex items-center flex-1">
+    <div className="overflow-x-auto pb-2">
+      <div className="flex items-center min-w-max gap-1">
+        {steps.map((step, index) => (
+          <div key={step.number} className="flex items-center shrink-0">
           <div className="flex items-center gap-3">
             <div
               className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all ${
@@ -45,13 +46,14 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
           </div>
           {index < steps.length - 1 && (
             <div
-              className={`flex-1 h-[2px] mx-4 ${
+              className={`w-6 h-[2px] shrink-0 mx-1 ${
                 step.number < currentStep ? "bg-[#3b82f6]" : "bg-[#e5e7eb]"
               }`}
             />
           )}
         </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
