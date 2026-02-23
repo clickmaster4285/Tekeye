@@ -57,6 +57,17 @@ const EXPLICIT_SUBMENU_ICONS: Record<string, SidebarIconComponent> = {
   "Vehicle Registration": Truck,
   "Contractor Passes": UserCheck,
   "Cargo/Delivery Logs": ClipboardList,
+  // Warehouse Management System submenus
+  "Seizure & Receipt": FileText,
+  "Warehouse Management": Package,
+  "Case Management": Scale,
+  "Transfers & Handover": ArrowRightLeft,
+  "Perishable Management": Package,
+  "Auction Management": Gavel,
+  "Computer Vision": Camera,
+  "Integration": Cog,
+  "Reports": BarChart3,
+  "User Management": Users,
   Employees: Users,
   Attendance: UserCheck,
   Notifications: Bell,
@@ -74,6 +85,7 @@ function resolveIconByKeyword(label: string): SidebarIconComponent {
   if (key.includes("settings") || key.includes("configuration")) return Cog
   if (key.includes("notification")) return Bell
   if (key.includes("transfer") || key.includes("movement") || key.includes("handover")) return ArrowRightLeft
+  if (key.includes("seizure") || key.includes("receipt")) return FileText
   if (key.includes("court") || key.includes("legal") || key.includes("fir") || key.includes("case")) return Scale
   if (key.includes("auction") || key.includes("bidding") || key.includes("sale")) return Gavel
   if (key.includes("document")) return FileText

@@ -97,7 +97,7 @@ export function Sidebar() {
     cn(
       "w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-all duration-200 border-l-2 border-transparent",
       isActive
-        ? "sidebar-active-gradient text-white font-medium border-[#155DFC]"
+        ? "bg-gradient-to-r from-[#155DFC] to-[#5F9EFC] text-white font-medium border-[#155DFC] shadow-sm"
         : "text-[#4B5563] hover:text-[#155DFC] hover:bg-[#155DFC]/10"
     )
 
@@ -105,7 +105,7 @@ export function Sidebar() {
     cn(
       "flex items-center gap-2 px-3 py-1.5 text-sm rounded-md transition-all duration-200 border-l-2 border-transparent",
       pathname === href
-        ? "bg-[#155DFC] text-white font-medium border-[#155DFC]"
+        ? "bg-gradient-to-r from-[#155DFC] to-[#5F9EFC] text-white font-medium border-[#155DFC] shadow-sm"
         : "text-[#4B5563] hover:text-[#155DFC] hover:bg-[#155DFC]/10"
     )
 
@@ -113,7 +113,7 @@ export function Sidebar() {
     <aside className="fixed inset-y-0 left-0 z-30 w-[300px] h-screen bg-[#F9FAFB] border-r border-[#E5E7EB] flex flex-col shrink-0 shadow-sm font-sans">
       <div className="p-4 border-b border-[#E5E7EB] shrink-0">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-[#155DFC] flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-[#155DFC] to-[#5F9EFC] flex items-center justify-center">
             <Eye className="w-5 h-5 text-white" />
           </div>
           <span className="font-semibold text-lg text-[#1F2937]">TekEye</span>
@@ -156,7 +156,7 @@ export function Sidebar() {
                     className={cn(
                       "w-full flex items-center justify-between px-3 py-2.5 rounded-md text-sm transition-all duration-200 border-l-2 border-transparent",
                       isActive
-                        ? "bg-[#155DFC] text-white font-medium border-[#155DFC]"
+                        ? "bg-gradient-to-r from-[#155DFC] to-[#5F9EFC] text-white font-medium border-[#155DFC] shadow-sm"
                         : "text-[#4B5563] hover:text-[#155DFC] hover:bg-[#155DFC]/10"
                     )}
                   >

@@ -83,8 +83,18 @@ export const DASHBOARD_ROUTES: { index?: true; path?: string; page: string }[] =
   { path: toChildPath(ROUTES.ANOMALY_DETECTION), page: "AnomalyDetection" },
   // Reports
   { path: toChildPath(ROUTES.REPORTS), page: "Reports" },
+  { path: toChildPath(ROUTES.STANDARD_REPORTS), page: "Reports" },
+  { path: toChildPath(ROUTES.CUSTOM_REPORT_BUILDER), page: "Reports" },
+  { path: toChildPath(ROUTES.EXPORT_CENTER), page: "Reports" },
   { path: toChildPath(ROUTES.PREDICTIVE_INSIGHTS), page: "PredictiveInsights" },
   { path: toChildPath(ROUTES.DATA_VISUALIZATION), page: "DataVisualization" },
+  // WMS Integration (reuse Integrations page)
+  { path: toChildPath(ROUTES.WEBOC_SYNC), page: "Integrations" },
+  { path: toChildPath(ROUTES.API_LOGS), page: "Integrations" },
+  // WMS User Management (reuse existing pages)
+  { path: toChildPath(ROUTES.USER_ACCOUNTS), page: "UserRoleManagement" },
+  { path: toChildPath(ROUTES.ROLES_PERMISSIONS), page: "UserRoleManagement" },
+  { path: toChildPath(ROUTES.ACTIVITY_LOGS), page: "SecurityAccess" },
   // HR
   { path: toChildPath(ROUTES.EMPLOYEES), page: "Employees" },
   { path: toChildPath(ROUTES.ATTENDANCE), page: "Attendance" },

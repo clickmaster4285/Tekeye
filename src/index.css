@@ -76,8 +76,8 @@
 }
 
 @theme inline {
-  --font-sans: 'Aptos', 'Segoe UI', sans-serif;
-  --font-mono: 'Aptos', 'Consolas', monospace;
+  --font-sans: 'Inter', 'Segoe UI', sans-serif;
+  --font-mono: 'Inter', 'Consolas', monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
