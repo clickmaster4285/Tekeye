@@ -33,6 +33,7 @@ export const PAGES = {
   GuardReceptionPanel: lazy(() => import("@/pages/registration/GuardReceptionPanel").then((m) => ({ default: m.default }))),
   VehicleContractorManagement: lazy(() => import("@/pages/registration/VehicleContractorManagement").then((m) => ({ default: m.default }))),
   VehicleRegistration: lazy(() => import("@/pages/registration/VehicleRegistration").then((m) => ({ default: m.default }))),
+  VehicleTracking: lazy(() => import("@/pages/registration/VehicleTracking").then((m) => ({ default: m.default }))),
   ContractorPasses: lazy(() => import("@/pages/registration/ContractorPasses").then((m) => ({ default: m.default }))),
   CargoDeliveryLogs: lazy(() => import("@/pages/registration/CargoDeliveryLogs").then((m) => ({ default: m.default }))),
   WarehouseSetup: lazy(() => import("@/pages/warehouse/WarehouseSetup").then((m) => ({ default: m.default }))),

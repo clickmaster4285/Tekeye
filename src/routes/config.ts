@@ -36,6 +36,7 @@ export const ROUTES = {
   GUARD_RECEPTION_PANEL: "/guard-reception-panel",
   VEHICLE_CONTRACTOR_MANAGEMENT: "/vehicle-contractor-management",
   VEHICLE_REGISTRATION: "/vehicle-registration",
+  VEHICLE_TRACKING: "/vehicle-tracking",
   CONTRACTOR_PASSES: "/contractor-passes",
   CARGO_DELIVERY_LOGS: "/cargo-delivery-logs",
 
@@ -182,6 +183,7 @@ export const NAV_SECTIONS: { title: string; items: (NavItem | NavGroup)[] }[] = 
             label: "Vehicle & Contractor Management",
             children: [
               { label: "Vehicle Registration", href: ROUTES.VEHICLE_REGISTRATION },
+              { label: "Vehicle Tracking", href: ROUTES.VEHICLE_TRACKING },
               { label: "Contractor Passes", href: ROUTES.CONTRACTOR_PASSES },
               { label: "Cargo/Delivery Logs", href: ROUTES.CARGO_DELIVERY_LOGS },
             ],

@@ -29,7 +29,7 @@ function SidebarChildren({
         if (!isNavGroup(node)) {
           return (
             <Link key={getNodeKey(node)} to={node.href} className={cn(childLinkClass(node.href), depth > 1 && "pl-6 text-[13px]")}>
-              {renderMenuIcon(node.label, 12, "shrink-0 opacity-70")}
+              {renderMenuIcon(node.label, 12, "shrink-0")}
               <span>{node.label}</span>
             </Link>
           )
@@ -95,28 +95,28 @@ export function Sidebar() {
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     cn(
-      "w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-all duration-200",
+      "w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-all duration-200 border-l-2 border-transparent",
       isActive
-        ? "bg-gradient-to-r from-[#3b82f6]/15 via-[#3b82f6]/10 to-transparent text-[#3b82f6] font-medium"
-        : "text-muted-foreground hover:bg-gradient-to-r hover:from-[#3b82f6]/10 hover:via-[#3b82f6]/5 hover:to-transparent hover:text-[#3b82f6] hover:translate-x-1"
+        ? "sidebar-active-gradient text-white font-medium border-[#155DFC]"
+        : "text-[#4B5563] hover:text-[#155DFC] hover:bg-[#155DFC]/10"
     )
 
   const childLinkClass = (href: string) =>
     cn(
-      "flex items-center gap-2 px-3 py-1.5 text-sm rounded-md transition-all duration-200",
+      "flex items-center gap-2 px-3 py-1.5 text-sm rounded-md transition-all duration-200 border-l-2 border-transparent",
       pathname === href
-        ? "text-[#3b82f6] font-medium bg-[#3b82f6]/5"
-        : "text-muted-foreground hover:text-[#3b82f6] hover:bg-[#3b82f6]/5 hover:translate-x-1"
+        ? "bg-[#155DFC] text-white font-medium border-[#155DFC]"
+        : "text-[#4B5563] hover:text-[#155DFC] hover:bg-[#155DFC]/10"
     )
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-30 w-[300px] h-screen bg-background border-r border-border flex flex-col shrink-0 shadow-sm font-sans">
-      <div className="p-4 border-b border-border shrink-0">
+    <aside className="fixed inset-y-0 left-0 z-30 w-[300px] h-screen bg-[#F9FAFB] border-r border-[#E5E7EB] flex flex-col shrink-0 shadow-sm font-sans">
+      <div className="p-4 border-b border-[#E5E7EB] shrink-0">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-[#3b82f6] flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-[#155DFC] flex items-center justify-center">
             <Eye className="w-5 h-5 text-white" />
           </div>
-          <span className="font-semibold text-lg text-foreground">TekEye</span>
+          <span className="font-semibold text-lg text-[#1F2937]">TekEye</span>
         </div>
       </div>
 
@@ -124,7 +124,7 @@ export function Sidebar() {
         {NAV_SECTIONS.map((section) => (
           <div key={section.title} className="mb-3">
             {section.title && (
-              <div className="px-3 py-2 text-[11px] font-semibold text-muted-foreground tracking-[0.12em] uppercase">
+              <div className="px-3 py-2 text-[11px] font-semibold text-[#6B7280] tracking-[0.12em] uppercase">
                 {section.title}
               </div>
             )}
@@ -154,24 +154,24 @@ export function Sidebar() {
                     onClick={() => toggleExpand(label)}
                     aria-expanded={isExpanded(label)}
                     className={cn(
-                      "w-full flex items-center justify-between px-3 py-2.5 rounded-md text-sm transition-all duration-200",
+                      "w-full flex items-center justify-between px-3 py-2.5 rounded-md text-sm transition-all duration-200 border-l-2 border-transparent",
                       isActive
-                        ? "bg-gradient-to-r from-[#3b82f6]/15 via-[#3b82f6]/10 to-transparent text-[#3b82f6] font-medium"
-                        : "text-muted-foreground hover:bg-gradient-to-r hover:from-[#3b82f6]/10 hover:via-[#3b82f6]/5 hover:to-transparent hover:text-[#3b82f6] hover:translate-x-1"
+                        ? "bg-[#155DFC] text-white font-medium border-[#155DFC]"
+                        : "text-[#4B5563] hover:text-[#155DFC] hover:bg-[#155DFC]/10"
                     )}
                   >
                     <div className="flex items-center gap-3">
-                      {renderMenuIcon(label, 18, "shrink-0")}
+                      {renderMenuIcon(label, 18, isActive ? "shrink-0 text-white" : "shrink-0 text-[#6B7280]")}
                       <span className="whitespace-nowrap text-left">{label}</span>
                     </div>
                     {isExpanded(label) ? (
-                      <ChevronDown size={16} aria-hidden />
+                      <ChevronDown size={16} aria-hidden className={isActive ? "text-white" : "text-[#6B7280]"} />
                     ) : (
-                      <ChevronRight size={16} aria-hidden />
+                      <ChevronRight size={16} aria-hidden className={isActive ? "text-white" : "text-[#6B7280]"} />
                     )}
                   </button>
                   {isExpanded(label) && (
-                    <div className="ml-6 mt-1.5 space-y-1 border-l border-border/70 pl-2">
+                    <div className="ml-6 mt-1.5 space-y-1 border-l-2 border-[#155DFC]/50 pl-2">
                       <SidebarChildren
                         nodes={group.children}
                         pathname={pathname}
@@ -189,8 +189,8 @@ export function Sidebar() {
         ))}
       </nav>
 
-      <div className="p-4 border-t border-border shrink-0">
-        <p className="text-xs text-muted-foreground">© 2024 Powered by OSIEMENS</p>
+      <div className="p-4 border-t border-[#E5E7EB] shrink-0">
+        <p className="text-xs text-[#6B7280]">© 2024 Powered by OSIEMENS</p>
       </div>
     </aside>
   )
