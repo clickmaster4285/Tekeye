@@ -124,6 +124,11 @@ export function VmsListPage({
     })
   }, [columns, effectiveFilterField, filter, rows, search])
 
+  const openAddForm = () => {
+    setFormData({})
+    setOpen(true)
+  }
+
   const onAdd = () => {
     const payload: Record<string, string> = {}
     for (const field of formFields) {
@@ -188,7 +193,7 @@ export function VmsListPage({
                   ))}
                 </SelectContent>
               </Select>
-              <Button onClick={() => setOpen(true)}>Add</Button>
+              <Button onClick={openAddForm}>Add</Button>
             </div>
           </div>
         </CardHeader>
@@ -224,7 +229,7 @@ export function VmsListPage({
         </CardContent>
       </Card>
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={(isOpen) => { setOpen(isOpen); if (!isOpen) setFormData({}) }}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>Add Record</DialogTitle>

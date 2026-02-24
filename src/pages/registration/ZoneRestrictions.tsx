@@ -169,7 +169,7 @@ export default function ZoneRestrictionsPage() {
               <Button variant="outline" asChild>
                 <Link to={ROUTES.GATE_INTEGRATION}>Gate Integration</Link>
               </Button>
-              <Button onClick={() => setOpen(true)}>Add zone</Button>
+              <Button onClick={() => { setFormData(emptyZone()); setOpen(true) }}>Add zone</Button>
             </div>
           </div>
         </CardHeader>
@@ -232,7 +232,7 @@ export default function ZoneRestrictionsPage() {
         </CardContent>
       </Card>
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={(isOpen) => { setOpen(isOpen); if (!isOpen) setFormData(emptyZone()) }}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Add zone</DialogTitle>
