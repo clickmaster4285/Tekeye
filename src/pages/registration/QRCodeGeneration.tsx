@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
+import QRCode from "qrcode"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,290 +12,396 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ModulePageLayout } from "@/components/dashboard/module-page-layout"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Printer, QrCode } from "lucide-react"
+
+/** Payload encoded in the QR code – when scanned, reader gets name, CNIC, zone, etc. */
+export interface QRScanPayload {
+  name: string
+  cnic: string
+  zone: string
+  qrCodeId: string
+  visitorRefNumber: string
+  visitDate: string
+  timeValidityStart: string
+  timeValidityEnd: string
+  entryGate: string
+  generatedOn: string
+}
+
+const defaultForm = () => ({
+  name: "",
+  cnic: "",
+  qrCodeId: "",
+  visitorRefNumber: "",
+  visitDate: new Date().toISOString().slice(0, 10),
+  timeValidityStart: "09:00",
+  timeValidityEnd: "18:00",
+  accessZone: "",
+  entryGate: "",
+  expiryStatus: "active",
+  scanCount: "0",
+  generatedOn: new Date().toISOString().slice(0, 10),
+  generatedBy: "operator",
+})
 
 export default function QRCodeGenerationPage() {
-  const [formData, setFormData] = useState({
-    qrCodeId: "",
-    visitorRefNumber: "",
-    visitDate: "",
-    timeValidityStart: "",
-    timeValidityEnd: "",
-    accessZone: "",
-    entryGate: "",
-    expiryStatus: "",
-    scanCount: "",
-    generatedOn: "",
-    generatedBy: "",
-  })
+  const [formData, setFormData] = useState(defaultForm())
+  const [savedQRCodes, setSavedQRCodes] = useState<Record<string, unknown>[]>([])
+  const [qrDataUrl, setQrDataUrl] = useState<string>("")
 
-  const [savedQRCodes, setSavedQRCodes] = useState<any[]>([])
-
-  // Load saved QR codes from localStorage on mount
   useEffect(() => {
     const stored = localStorage.getItem("qrCodes")
-    if (stored) setSavedQRCodes(JSON.parse(stored))
+    if (stored) try { setSavedQRCodes(JSON.parse(stored)) } catch { /* ignore */ }
   }, [])
 
-  // Save QR codes to localStorage whenever the array changes
   useEffect(() => {
     localStorage.setItem("qrCodes", JSON.stringify(savedQRCodes))
   }, [savedQRCodes])
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  // Use stable placeholder when qrCodeId empty so useEffect deps don't change every tick (Date.now() caused infinite loop)
+  const payload: QRScanPayload = {
+    name: formData.name.trim(),
+    cnic: formData.cnic.trim(),
+    zone: formData.accessZone || "",
+    qrCodeId: formData.qrCodeId.trim() || "QR",
+    visitorRefNumber: formData.visitorRefNumber.trim(),
+    visitDate: formData.visitDate,
+    timeValidityStart: formData.timeValidityStart,
+    timeValidityEnd: formData.timeValidityEnd,
+    entryGate: formData.entryGate || "",
+    generatedOn: formData.generatedOn,
+  }
+
+  useEffect(() => {
+    const text = JSON.stringify(payload)
+    let cancelled = false
+    QRCode.toDataURL(text, { width: 220, margin: 2 })
+      .then((url) => { if (!cancelled) setQrDataUrl(url) })
+      .catch(() => { if (!cancelled) setQrDataUrl("") })
+    return () => { cancelled = true }
+  }, [
+    formData.name,
+    formData.cnic,
+    formData.accessZone,
+    formData.qrCodeId,
+    formData.visitorRefNumber,
+    formData.visitDate,
+    formData.timeValidityStart,
+    formData.timeValidityEnd,
+    formData.entryGate,
+    formData.generatedOn,
+  ])
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
   const handleSaveEntry = () => {
-    // Auto-generate QR Code ID if empty
-    const qrCodeId = formData.qrCodeId || `QR-${Date.now()}`
+    const qrCodeId = formData.qrCodeId.trim() || `QR-${Date.now()}`
     setSavedQRCodes([{ ...formData, qrCodeId }, ...savedQRCodes])
-    setFormData({
-      qrCodeId: "",
-      visitorRefNumber: "",
-      visitDate: "",
-      timeValidityStart: "",
-      timeValidityEnd: "",
-      accessZone: "",
-      entryGate: "",
-      expiryStatus: "",
-      scanCount: "",
-      generatedOn: "",
-      generatedBy: "",
-    })
-    alert("QR Code entry saved successfully!")
+    setFormData(defaultForm())
   }
 
+  const printThermalReceipt = useCallback(() => {
+    const receiptHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Receipt - ${payload.name || "Visitor"}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      width: 80mm; 
+      max-width: 80mm; 
+      padding: 4mm; 
+      font-family: monospace; 
+      font-size: 11px; 
+      line-height: 1.35;
+    }
+    .center { text-align: center; }
+    .line { border-bottom: 1px dashed #333; margin: 4px 0; }
+    .row { display: flex; justify-content: space-between; margin: 2px 0; }
+    .label { font-weight: bold; }
+    img { display: block; margin: 6px auto; width: 50mm; height: 50mm; }
+    .footer { margin-top: 6px; font-size: 9px; color: #666; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="center">
+    <strong>VISITOR PASS</strong><br>
+    <span style="font-size: 9px;">Customs Warehouse</span>
+  </div>
+  <div class="line"></div>
+  <div class="row"><span class="label">Name:</span><span>${payload.name || "—"}</span></div>
+  <div class="row"><span class="label">CNIC:</span><span>${payload.cnic || "—"}</span></div>
+  <div class="row"><span class="label">Zone:</span><span>${payload.zone || "—"}</span></div>
+  <div class="line"></div>
+  <div class="row"><span class="label">Ref No:</span><span>${payload.visitorRefNumber || payload.qrCodeId || "—"}</span></div>
+  <div class="row"><span class="label">Visit Date:</span><span>${payload.visitDate || "—"}</span></div>
+  <div class="row"><span class="label">Time:</span><span>${payload.timeValidityStart || ""} - ${payload.timeValidityEnd || ""}</span></div>
+  <div class="row"><span class="label">Gate:</span><span>${payload.entryGate || "—"}</span></div>
+  <div class="line"></div>
+  <div class="center"><strong>Scan at gate</strong></div>
+  <img src="${qrDataUrl}" alt="QR Code" />
+  <div class="footer">Generated: ${payload.generatedOn} | ID: ${payload.qrCodeId}</div>
+</body>
+</html>`
+    const win = window.open("", "_blank")
+    if (!win) {
+      alert("Please allow pop-ups to print the receipt.")
+      return
+    }
+    win.document.write(receiptHtml)
+    win.document.close()
+    win.focus()
+    setTimeout(() => {
+      win.print()
+      win.close()
+    }, 250)
+  }, [payload, qrDataUrl])
+
+  const canSave = formData.name.trim() !== "" && formData.cnic.trim() !== ""
+
   return (
-    <>
-      {/* Breadcrumb */}
-      <div className="text-sm text-muted-foreground mb-2">
-        Home / Visitor Registration / <span className="text-[#3b82f6]">QR Code Generation</span>
-      </div>
-
-      {/* Title */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-foreground">QR Code Generation</h1>
-        <p className="text-sm text-muted-foreground">
-          Generate unique QR for visit authentication.
-        </p>
-      </div>
-
-      {/* Form Container */}
-      <div className="bg-background rounded-lg border border-border p-6 mb-6">
-        <h2 className="text-lg font-medium text-foreground mb-6">QR Code Metadata</h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* QR Code ID */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-foreground">QR Code ID</Label>
-            <Input
-              type="text"
-              placeholder="Enter system generated ID"
-              name="qrCodeId"
-              value={formData.qrCodeId}
-              onChange={handleInputChange}
-              className="h-10 border-border"
-            />
-          </div>
-
-          {/* Visitor Reference Number */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-foreground">Visitor Reference Number</Label>
-            <Input
-              type="text"
-              placeholder="Enter Reference Id"
-              name="visitorRefNumber"
-              value={formData.visitorRefNumber}
-              onChange={handleInputChange}
-              className="h-10 border-border"
-            />
-          </div>
-
-          {/* Visit Date */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-foreground">Visit Date</Label>
-            <Input
-              type="text"
-              placeholder="DD/MM/YYYY"
-              name="visitDate"
-              value={formData.visitDate}
-              onChange={handleInputChange}
-              className="h-10 border-border"
-            />
-          </div>
-
-          {/* Time Validity */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-foreground">Time Validity</Label>
-            <div className="flex items-center gap-2">
-              <Input
-                type="text"
-                placeholder="Start time"
-                name="timeValidityStart"
-                value={formData.timeValidityStart}
-                onChange={handleInputChange}
-                className="h-10 border-border flex-1"
-              />
-              <span className="text-muted-foreground">to</span>
-              <Input
-                type="text"
-                placeholder="End time"
-                name="timeValidityEnd"
-                value={formData.timeValidityEnd}
-                onChange={handleInputChange}
-                className="h-10 border-border flex-1"
-              />
+    <ModulePageLayout
+      title="QR Code Generation"
+      description="Generate QR code with Name, CNIC, Zone. Print thermal receipt; when scanned, the QR returns name, CNIC, zone and other details."
+      breadcrumbs={[{ label: "WMS" }, { label: "Seizure & Receipt" }, { label: "QR Code Generation" }]}
+    >
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Details for receipt &amp; QR</CardTitle>
+            <CardDescription>Name, CNIC and Zone are encoded in the QR code and shown on the printed receipt.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2 sm:col-span-2">
+                <Label>Name *</Label>
+                <Input
+                  name="name"
+                  placeholder="Full name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="h-10 border-border"
+                />
+              </div>
+              <div className="space-y-2 sm:col-span-2">
+                <Label>CNIC *</Label>
+                <Input
+                  name="cnic"
+                  placeholder="e.g. 35201-1234567-1"
+                  value={formData.cnic}
+                  onChange={handleInputChange}
+                  className="h-10 border-border"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Zone (Access Zone) *</Label>
+                <Select
+                  value={formData.accessZone}
+                  onValueChange={(v) => setFormData({ ...formData, accessZone: v })}
+                >
+                  <SelectTrigger className="h-10 border-border">
+                    <SelectValue placeholder="Select zone" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="zone-a">Zone A</SelectItem>
+                    <SelectItem value="zone-b">Zone B</SelectItem>
+                    <SelectItem value="zone-c">Zone C</SelectItem>
+                    <SelectItem value="all">All Zones</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Visitor Ref Number</Label>
+                <Input
+                  name="visitorRefNumber"
+                  placeholder="Reference Id"
+                  value={formData.visitorRefNumber}
+                  onChange={handleInputChange}
+                  className="h-10 border-border"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>QR Code ID</Label>
+                <Input
+                  name="qrCodeId"
+                  placeholder="Auto if empty"
+                  value={formData.qrCodeId}
+                  onChange={handleInputChange}
+                  className="h-10 border-border"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Visit Date</Label>
+                <Input
+                  type="date"
+                  name="visitDate"
+                  value={formData.visitDate}
+                  onChange={handleInputChange}
+                  className="h-10 border-border"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Time validity start</Label>
+                <Input
+                  type="time"
+                  name="timeValidityStart"
+                  value={formData.timeValidityStart}
+                  onChange={handleInputChange}
+                  className="h-10 border-border"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Time validity end</Label>
+                <Input
+                  type="time"
+                  name="timeValidityEnd"
+                  value={formData.timeValidityEnd}
+                  onChange={handleInputChange}
+                  className="h-10 border-border"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Entry Gate</Label>
+                <Select
+                  value={formData.entryGate}
+                  onValueChange={(v) => setFormData({ ...formData, entryGate: v })}
+                >
+                  <SelectTrigger className="h-10 border-border">
+                    <SelectValue placeholder="Select gate" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="main-gate">Main Gate</SelectItem>
+                    <SelectItem value="gate-1">Gate 1</SelectItem>
+                    <SelectItem value="gate-2">Gate 2</SelectItem>
+                    <SelectItem value="vip-gate">VIP Gate</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Generated On</Label>
+                <Input
+                  type="date"
+                  name="generatedOn"
+                  value={formData.generatedOn}
+                  onChange={handleInputChange}
+                  className="h-10 border-border"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Generated By</Label>
+                <Select
+                  value={formData.generatedBy}
+                  onValueChange={(v) => setFormData({ ...formData, generatedBy: v })}
+                >
+                  <SelectTrigger className="h-10 border-border">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="system">System</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="operator">Operator</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          </div>
+            <div className="flex flex-wrap gap-2 pt-2">
+              <Button
+                className="bg-[#3b82f6] hover:bg-[#2563eb] text-white"
+                onClick={handleSaveEntry}
+                disabled={!canSave}
+              >
+                Save QR Code
+              </Button>
+              <Button
+                variant="outline"
+                onClick={printThermalReceipt}
+                disabled={!qrDataUrl}
+              >
+                <Printer className="h-4 w-4 mr-2" />
+                Print receipt (thermal)
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
-          {/* Access Zone */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-foreground">Access Zone</Label>
-            <Select
-              value={formData.accessZone}
-              onValueChange={(value) => setFormData({ ...formData, accessZone: value })}
-            >
-              <SelectTrigger className="h-10 border-border">
-                <SelectValue placeholder="Select zone" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="zone-a">Zone A</SelectItem>
-                <SelectItem value="zone-b">Zone B</SelectItem>
-                <SelectItem value="zone-c">Zone C</SelectItem>
-                <SelectItem value="all">All Zones</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Entry Gate */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-foreground">Entry Gate</Label>
-            <Select
-              value={formData.entryGate}
-              onValueChange={(value) => setFormData({ ...formData, entryGate: value })}
-            >
-              <SelectTrigger className="h-10 border-border">
-                <SelectValue placeholder="Select gate" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="main-gate">Main Gate</SelectItem>
-                <SelectItem value="gate-1">Gate 1</SelectItem>
-                <SelectItem value="gate-2">Gate 2</SelectItem>
-                <SelectItem value="vip-gate">VIP Gate</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Expiry Status */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-foreground">Expiry Status</Label>
-            <Select
-              value={formData.expiryStatus}
-              onValueChange={(value) => setFormData({ ...formData, expiryStatus: value })}
-            >
-              <SelectTrigger className="h-10 border-border">
-                <SelectValue placeholder="Select status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="expired">Expired</SelectItem>
-                <SelectItem value="revoked">Revoked</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Scan Count */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-foreground">Scan Count</Label>
-            <Input
-              type="text"
-              placeholder="Enter scan count"
-              name="scanCount"
-              value={formData.scanCount}
-              onChange={handleInputChange}
-              className="h-10 border-border"
-            />
-          </div>
-
-          {/* Generated On */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-foreground">Generated On</Label>
-            <Input
-              type="text"
-              placeholder="DD/MM/YYYY"
-              name="generatedOn"
-              value={formData.generatedOn}
-              onChange={handleInputChange}
-              className="h-10 border-border"
-            />
-          </div>
-
-          {/* Generated By */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-foreground">Generated By</Label>
-            <Select
-              value={formData.generatedBy}
-              onValueChange={(value) => setFormData({ ...formData, generatedBy: value })}
-            >
-              <SelectTrigger className="h-10 border-border">
-                <SelectValue placeholder="Select source" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="system">System</SelectItem>
-                <SelectItem value="admin">Admin</SelectItem>
-                <SelectItem value="operator">Operator</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        {/* Save Button */}
-        <div className="flex justify-end mt-6">
-          <Button className="bg-[#3b82f6] hover:bg-[#2563eb] text-white" onClick={handleSaveEntry}>
-            Save QR Code
-          </Button>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <QrCode className="h-5 w-5" />
+              QR Code (scan for Name, CNIC, Zone)
+            </CardTitle>
+            <CardDescription>
+              This QR encodes: name, cnic, zone, ref, date, time, gate. Scan to read the same info.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {qrDataUrl ? (
+              <div className="flex flex-col items-center gap-4">
+                <img
+                  src={qrDataUrl}
+                  alt="QR Code"
+                  className="w-48 h-48 object-contain border border-border rounded-lg"
+                />
+                <p className="text-xs text-muted-foreground text-center max-w-xs">
+                  Scanned content (JSON): name, cnic, zone, qrCodeId, visitorRefNumber, visitDate, timeValidityStart, timeValidityEnd, entryGate, generatedOn
+                </p>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground text-sm">
+                Fill Name, CNIC and Zone to generate QR.
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Saved QR Codes Table */}
       {savedQRCodes.length > 0 && (
-        <div className="bg-background rounded-lg border border-border p-6">
-          <h2 className="text-lg font-medium text-foreground mb-4">Saved QR Codes</h2>
-          <div className="overflow-x-auto">
-            <table className="min-w-full border border-border text-sm">
-              <thead className="bg-muted/10">
-                <tr>
-                  <th className="p-2 border border-border">QR ID</th>
-                  <th className="p-2 border border-border">Visitor Ref</th>
-                  <th className="p-2 border border-border">Visit Date</th>
-                  <th className="p-2 border border-border">Access Zone</th>
-                  <th className="p-2 border border-border">Entry Gate</th>
-                  <th className="p-2 border border-border">Expiry Status</th>
-                  <th className="p-2 border border-border">Scan Count</th>
-                  <th className="p-2 border border-border">Generated On</th>
-                  <th className="p-2 border border-border">Generated By</th>
-                </tr>
-              </thead>
-              <tbody>
-                {savedQRCodes.map((qr, idx) => (
-                  <tr key={idx} className="hover:bg-muted/5">
-                    <td className="p-2 border border-border">{qr.qrCodeId}</td>
-                    <td className="p-2 border border-border">{qr.visitorRefNumber}</td>
-                    <td className="p-2 border border-border">{qr.visitDate}</td>
-                    <td className="p-2 border border-border">{qr.accessZone}</td>
-                    <td className="p-2 border border-border">{qr.entryGate}</td>
-                    <td className="p-2 border border-border">{qr.expiryStatus}</td>
-                    <td className="p-2 border border-border">{qr.scanCount}</td>
-                    <td className="p-2 border border-border">{qr.generatedOn}</td>
-                    <td className="p-2 border border-border">{qr.generatedBy}</td>
+        <Card>
+          <CardHeader>
+            <CardTitle>Saved QR Codes</CardTitle>
+            <CardDescription>Name, CNIC, Zone and other fields saved for each entry.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="min-w-full border border-border text-sm">
+                <thead className="bg-muted/10">
+                  <tr>
+                    <th className="p-2 border border-border">Name</th>
+                    <th className="p-2 border border-border">CNIC</th>
+                    <th className="p-2 border border-border">Zone</th>
+                    <th className="p-2 border border-border">QR ID</th>
+                    <th className="p-2 border border-border">Visitor Ref</th>
+                    <th className="p-2 border border-border">Visit Date</th>
+                    <th className="p-2 border border-border">Entry Gate</th>
+                    <th className="p-2 border border-border">Generated On</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+                </thead>
+                <tbody>
+                  {savedQRCodes.map((qr: Record<string, unknown>, idx: number) => (
+                    <tr key={idx} className="hover:bg-muted/5">
+                      <td className="p-2 border border-border">{String(qr.name ?? "—")}</td>
+                      <td className="p-2 border border-border">{String(qr.cnic ?? "—")}</td>
+                      <td className="p-2 border border-border">{String(qr.accessZone ?? "—")}</td>
+                      <td className="p-2 border border-border">{String(qr.qrCodeId ?? "—")}</td>
+                      <td className="p-2 border border-border">{String(qr.visitorRefNumber ?? "—")}</td>
+                      <td className="p-2 border border-border">{String(qr.visitDate ?? "—")}</td>
+                      <td className="p-2 border border-border">{String(qr.entryGate ?? "—")}</td>
+                      <td className="p-2 border border-border">{String(qr.generatedOn ?? "—")}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
       )}
-    </>
+
+    </ModulePageLayout>
   )
 }

@@ -252,26 +252,7 @@ export const NAV_SECTIONS: { title: string; items: (NavItem | NavGroup)[] }[] = 
               { label: "Transfer Tracking", href: ROUTES.TRANSFER_TRACKING },
             ],
           },
-          {
-            label: "Perishable",
-            children: [
-              { label: "Perishable Register", href: ROUTES.PERISHABLE_REGISTER },
-              { label: "Expiry Tracking", href: ROUTES.EXPIRY_TRACKING },
-              { label: "Priority Disposal Queue", href: ROUTES.PRIORITY_DISPOSAL_QUEUE },
-              { label: "Destruction Orders", href: ROUTES.DESTRUCTION_ORDERS },
-            ],
-          },
-          {
-            label: "Auction",
-            children: [
-              { label: "Lot Creation", href: ROUTES.LOT_CREATION },
-              { label: "Item Valuation", href: ROUTES.ITEM_VALUATION },
-              { label: "ASO Portal Sync", href: ROUTES.ASO_PORTAL_SYNC },
-              { label: "Bidding", href: ROUTES.BIDDING_MANAGEMENT },
-              { label: "Sale Completion", href: ROUTES.SALE_COMPLETION },
-              { label: "Revenue Reports", href: ROUTES.REVENUE_REPORTS },
-            ],
-          },
+         
           {
             label: "Computer Vision",
             children: [

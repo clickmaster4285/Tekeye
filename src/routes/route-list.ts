@@ -4,7 +4,7 @@
  */
 import { ROUTES } from "./config"
 
-export const toChildPath = (r: string) => r.replace(/^\//, "")
+export const toChildPath = (r: string | undefined) => (r ?? "").replace(/^\//, "")
 
 export const DASHBOARD_ROUTES: { index?: true; path?: string; page: string }[] = [
   { index: true, page: "Dashboard" },
