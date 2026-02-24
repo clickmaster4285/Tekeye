@@ -51,6 +51,7 @@ export const ROUTES = {
   CAMERA_INTEGRATION: "/camera-integration",
   OPERATIONS_DASHBOARD: "/operations-dashboard",
   ANALYTICS_DASHBOARD: "/analytics-dashboard",
+  LIVE_CAMERA_GRID: "/analytics/live-camera-grid",
   LIVE_MONITORING: "/live-monitoring",
   CAMERA_MANAGEMENT: "/camera-management",
   OBJECT_DETECTION: "/object-detection",
@@ -155,6 +156,7 @@ export const NAV_SECTIONS: { title: string; items: (NavItem | NavGroup)[] }[] = 
     title: "MAIN MODULES",
     items: [
       { label: "Dashboard", href: ROUTES.DASHBOARD },
+      { label: "Executive Dashboard", href: ROUTES.DASHBOARD },
       {
         label: "Visitor Management",
         children: [
@@ -208,7 +210,6 @@ export const NAV_SECTIONS: { title: string; items: (NavItem | NavGroup)[] }[] = 
           {
             label: "Dashboard",
             children: [
-              { label: "Executive Dashboard", href: ROUTES.DASHBOARD },
               { label: "Operations Dashboard", href: ROUTES.OPERATIONS_DASHBOARD },
               { label: "AI Analytics Dashboard", href: ROUTES.ANALYTICS_DASHBOARD },
               { label: "Live Monitoring", href: ROUTES.LIVE_MONITORING },
@@ -315,6 +316,7 @@ export const NAV_SECTIONS: { title: string; items: (NavItem | NavGroup)[] }[] = 
         label: "AI Analytics",
         children: [
           { label: "Analytics Dashboard", href: ROUTES.ANALYTICS_DASHBOARD },
+          { label: "Live Camera Grid", href: ROUTES.LIVE_CAMERA_GRID },
           { label: "Reports", href: ROUTES.REPORTS },
           { label: "Predictive Insights", href: ROUTES.PREDICTIVE_INSIGHTS },
           { label: "Data Visualization", href: ROUTES.DATA_VISUALIZATION },

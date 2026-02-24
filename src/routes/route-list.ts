@@ -47,6 +47,7 @@ export const DASHBOARD_ROUTES: { index?: true; path?: string; page: string }[] =
   { path: toChildPath(ROUTES.CAMERA_INTEGRATION), page: "CameraIntegration" },
   { path: toChildPath(ROUTES.OPERATIONS_DASHBOARD), page: "OperationsDashboard" },
   { path: toChildPath(ROUTES.ANALYTICS_DASHBOARD), page: "AnalyticsDashboard" },
+  { path: toChildPath(ROUTES.LIVE_CAMERA_GRID), page: "LiveCameraGrid" },
   { path: toChildPath(ROUTES.LIVE_MONITORING), page: "LiveMonitoring" },
   // Seizures
   { path: toChildPath(ROUTES.NEW_SEIZURE_ENTRY), page: "NewSeizureEntry" },

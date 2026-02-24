@@ -141,7 +141,7 @@ export default function GateIntegrationPage() {
                 placeholder="Search by name, ID, IP..."
                 className="md:w-56"
               />
-              <Button onClick={() => setOpen(true)}>Add gate</Button>
+              <Button onClick={() => { setFormData(emptyGate()); setOpen(true) }}>Add gate</Button>
             </div>
           </div>
         </CardHeader>
@@ -195,7 +195,7 @@ export default function GateIntegrationPage() {
         </CardContent>
       </Card>
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={(isOpen) => { setOpen(isOpen); if (!isOpen) setFormData(emptyGate()) }}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Add gate</DialogTitle>
