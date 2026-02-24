@@ -1,9 +1,23 @@
-
+import { useEffect, useState } from "react"
 import { Warehouse, MapPin, Package, Plus } from "lucide-react"
 import { ModulePageLayout } from "@/components/dashboard/module-page-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import {
   Table,
   TableBody,
@@ -14,7 +28,75 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 
+const STORAGE_KEY = "wms_warehouses"
+
+type WarehouseRow = {
+  id: string
+  code: string
+  name: string
+  location: string
+  capacity: string
+  status: string
+}
+
+const defaultRows: WarehouseRow[] = [
+  { id: "1", code: "WH-001", name: "Main Distribution Center", location: "Karachi", capacity: "10,000", status: "Active" },
+  { id: "2", code: "WH-002", name: "North Regional Hub", location: "Lahore", capacity: "8,500", status: "Active" },
+  { id: "3", code: "WH-003", name: "Customs Bonded Warehouse", location: "Port Qasim", capacity: "12,000", status: "Active" },
+  { id: "4", code: "WH-004", name: "Transit Warehouse", location: "Islamabad", capacity: "5,200", status: "Active" },
+  { id: "5", code: "WH-005", name: "Cold Storage Unit", location: "Faisalabad", capacity: "2,800", status: "Maintenance" },
+]
+
+function loadRows(): WarehouseRow[] {
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY)
+    if (raw) {
+      const parsed = JSON.parse(raw)
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed
+    }
+  } catch {}
+  return defaultRows
+}
+
+function saveRows(rows: WarehouseRow[]) {
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(rows))
+}
+
 export default function WarehouseSetupPage() {
+  const [rows, setRows] = useState<WarehouseRow[]>([])
+  const [open, setOpen] = useState(false)
+  const [form, setForm] = useState({ code: "", name: "", location: "", capacity: "", status: "Active" })
+
+  useEffect(() => {
+    setRows(loadRows())
+  }, [])
+
+  useEffect(() => {
+    if (rows.length > 0) saveRows(rows)
+  }, [rows])
+
+  const openAdd = () => {
+    setForm({ code: "", name: "", location: "", capacity: "", status: "Active" })
+    setOpen(true)
+  }
+
+  const onSave = () => {
+    if (!form.code.trim() || !form.name.trim() || !form.location.trim() || !form.capacity.trim()) return
+    const newRow: WarehouseRow = {
+      id: `wh-${Date.now()}`,
+      code: form.code.trim(),
+      name: form.name.trim(),
+      location: form.location.trim(),
+      capacity: form.capacity.trim(),
+      status: form.status,
+    }
+    setRows((prev) => [newRow, ...prev])
+    setOpen(false)
+  }
+
+  const totalCapacity = rows.reduce((sum, r) => sum + (parseInt(r.capacity.replace(/,/g, ""), 10) || 0), 0)
+  const activeCount = rows.filter((r) => r.status === "Active").length
+
   return (
     <ModulePageLayout
       title="Warehouse Setup"
@@ -25,49 +107,43 @@ export default function WarehouseSetupPage() {
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Total Warehouses
-              </CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Warehouses</CardTitle>
               <Warehouse className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">12</div>
+              <div className="text-2xl font-bold">{rows.length}</div>
               <p className="text-xs text-muted-foreground mt-1">Active locations</p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Total Capacity
-              </CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Capacity</CardTitle>
               <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">48,500</div>
+              <div className="text-2xl font-bold">{totalCapacity.toLocaleString()}</div>
               <p className="text-xs text-muted-foreground mt-1">Pallet positions</p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Utilization
-              </CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Utilization</CardTitle>
               <MapPin className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">72%</div>
-              <p className="text-xs text-muted-foreground mt-1">Current usage</p>
+              <div className="text-2xl font-bold">{activeCount > 0 ? Math.round((activeCount / rows.length) * 100) : 0}%</div>
+              <p className="text-xs text-muted-foreground mt-1">Active vs total</p>
             </CardContent>
           </Card>
         </div>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 gap-4 flex-wrap">
             <div>
               <CardTitle>Warehouse List</CardTitle>
-              <CardDescription>Manage warehouse profiles and settings</CardDescription>
+              <CardDescription>Manage warehouse profiles and settings. Data saved in localStorage.</CardDescription>
             </div>
-            <Button className="bg-[#3b82f6] hover:bg-[#2563eb] text-white">
+            <Button className="bg-primary text-primary-foreground hover:bg-primary/90 flex-shrink-0" onClick={openAdd}>
               <Plus className="h-4 w-4 mr-2" />
               Add Warehouse
             </Button>
@@ -85,27 +161,17 @@ export default function WarehouseSetupPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {[
-                  { code: "WH-001", name: "Main Distribution Center", location: "Karachi", capacity: "10,000", status: "Active" },
-                  { code: "WH-002", name: "North Regional Hub", location: "Lahore", capacity: "8,500", status: "Active" },
-                  { code: "WH-003", name: "Customs Bonded Warehouse", location: "Port Qasim", capacity: "12,000", status: "Active" },
-                  { code: "WH-004", name: "Transit Warehouse", location: "Islamabad", capacity: "5,200", status: "Active" },
-                  { code: "WH-005", name: "Cold Storage Unit", location: "Faisalabad", capacity: "2,800", status: "Maintenance" },
-                ].map((row) => (
-                  <TableRow key={row.code}>
+                {rows.map((row) => (
+                  <TableRow key={row.id}>
                     <TableCell className="font-medium">{row.code}</TableCell>
                     <TableCell>{row.name}</TableCell>
                     <TableCell>{row.location}</TableCell>
                     <TableCell>{row.capacity}</TableCell>
                     <TableCell>
-                      <Badge variant={row.status === "Active" ? "default" : "secondary"}>
-                        {row.status}
-                      </Badge>
+                      <Badge variant={row.status === "Active" ? "default" : "secondary"}>{row.status}</Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="sm" className="text-[#3b82f6]">
-                        Edit
-                      </Button>
+                      <Button variant="ghost" size="sm" className="text-primary">Edit</Button>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -114,6 +180,66 @@ export default function WarehouseSetupPage() {
           </CardContent>
         </Card>
       </div>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Warehouse</DialogTitle>
+            <p className="text-sm text-muted-foreground">New warehouse. Stored in localStorage.</p>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label>Code</Label>
+              <Input
+                value={form.code}
+                onChange={(e) => setForm((f) => ({ ...f, code: e.target.value }))}
+                placeholder="e.g. WH-006"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label>Name</Label>
+              <Input
+                value={form.name}
+                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                placeholder="Warehouse name"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label>Location</Label>
+              <Input
+                value={form.location}
+                onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))}
+                placeholder="City or address"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label>Capacity</Label>
+              <Input
+                value={form.capacity}
+                onChange={(e) => setForm((f) => ({ ...f, capacity: e.target.value }))}
+                placeholder="e.g. 10,000"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label>Status</Label>
+              <Select value={form.status} onValueChange={(v) => setForm((f) => ({ ...f, status: v }))}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Active">Active</SelectItem>
+                  <SelectItem value="Maintenance">Maintenance</SelectItem>
+                  <SelectItem value="Inactive">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+            <Button onClick={onSave}>Save</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </ModulePageLayout>
   )
 }
