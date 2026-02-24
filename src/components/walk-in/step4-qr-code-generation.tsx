@@ -1,7 +1,7 @@
 "use client"
 
-import { useMemo } from "react"
-import { QRCodeSVG } from "qrcode.react"
+import { useMemo, useEffect, useState } from "react"
+import QRCode from "qrcode"
 import { Label } from "@/components/ui/label"
 import { QrCode } from "lucide-react"
 
@@ -73,6 +73,13 @@ export function WalkInStep4QRCodeGeneration({
   const validFrom = (formData.timeValidityStart ?? "").trim() || "00:00"
   const validTo = (formData.timeValidityEnd ?? "").trim() || "23:59"
 
+  const [qrDataUrl, setQrDataUrl] = useState<string>("")
+  useEffect(() => {
+    QRCode.toDataURL(qrPayload, { width: 200, margin: 2 })
+      .then(setQrDataUrl)
+      .catch(() => setQrDataUrl(""))
+  }, [qrPayload])
+
   return (
     <div className="space-y-8">
       <Label className="text-[22px] font-bold text-foreground">QR Code Generation</Label>
@@ -83,7 +90,13 @@ export function WalkInStep4QRCodeGeneration({
       {/* Generated QR from form data */}
       <div className="rounded-lg border-2 border-[#93c5fd] bg-white p-6 flex flex-col items-center justify-center gap-4 min-h-[240px]">
         <div className="rounded-lg border border-border bg-white p-4">
-          <QRCodeSVG value={qrPayload} size={200} level="M" />
+          {qrDataUrl ? (
+            <img src={qrDataUrl} alt="QR Code" className="h-[200px] w-[200px]" />
+          ) : (
+            <div className="h-[200px] w-[200px] rounded border border-border bg-muted flex items-center justify-center text-sm text-muted-foreground">
+              Generating…
+            </div>
+          )}
         </div>
         <div className="text-center text-sm text-muted-foreground space-y-0.5">
           <p className="font-medium text-foreground">{visitorName}</p>
