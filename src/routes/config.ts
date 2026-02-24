@@ -156,7 +156,7 @@ export const NAV_SECTIONS: { title: string; items: (NavItem | NavGroup)[] }[] = 
     title: "MAIN MODULES",
     items: [
       { label: "Dashboard", href: ROUTES.DASHBOARD },
-      { label: "Executive Dashboard", href: ROUTES.DASHBOARD },
+      // { label: "Executive Dashboard", href: ROUTES.DASHBOARD },
       {
         label: "Visitor Management",
         children: [
@@ -208,12 +208,7 @@ export const NAV_SECTIONS: { title: string; items: (NavItem | NavGroup)[] }[] = 
         label: "Warehouse Management",
         children: [
           {
-            label: "Dashboard",
-            children: [
-              { label: "Operations Dashboard", href: ROUTES.OPERATIONS_DASHBOARD },
-              { label: "AI Analytics Dashboard", href: ROUTES.ANALYTICS_DASHBOARD },
-              { label: "Live Monitoring", href: ROUTES.LIVE_MONITORING },
-            ],
+            label: "Dashboard", href: ROUTES.OPERATIONS_DASHBOARD,
           },
           {
             label: "Seizure & Receipt",
