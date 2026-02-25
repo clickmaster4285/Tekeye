@@ -27,7 +27,7 @@ type TransferRow = { ref: string; from: string; to: string; status: string }
 
 const defaultRows: TransferRow[] = [
   { ref: "TR-2024-0841", from: "Karachi", to: "Lahore", status: "Pending" },
-  { ref: "TR-2024-0840", from: "Islamabad", to: "Karachi", status: "In Transit" },
+  { ref: "TR-2024-0840", from: "Peshawar", to: "Karachi", status: "In Transit" },
 ]
 
 function loadRows(): TransferRow[] {
@@ -45,7 +45,7 @@ function saveRows(rows: TransferRow[]) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(rows))
 }
 
-const LOCATIONS = ["Karachi", "Lahore", "Islamabad", "Rawalpindi", "Faisalabad", "Multan"]
+const LOCATIONS = ["Karachi", "Lahore", "Islamabad", "Rawalpindi","Peshawar", "Faisalabad", "Multan"]
 const STATUSES = ["Pending", "In Transit", "Completed"]
 
 export default function InterCollectorateTransferPage() {
