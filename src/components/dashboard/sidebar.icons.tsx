@@ -65,6 +65,7 @@ const EXPLICIT_SUBMENU_ICONS: Record<string, SidebarIconComponent> = {
   "Perishable Management": Package,
   "Auction Management": Gavel,
   "Computer Vision": Camera,
+  "Vehicle Detection": Truck,
   "Integration": Cog,
   "Reports": BarChart3,
   "User Management": Users,

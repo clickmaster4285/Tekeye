@@ -45,6 +45,7 @@ export const PAGES = {
   OperationsDashboard: lazy(() => import("@/pages/operations/OperationsDashboard").then((m) => ({ default: m.default }))),
   AnalyticsDashboard: lazy(() => import("@/pages/operations/AnalyticsDashboard").then((m) => ({ default: m.default }))),
   LiveCameraGrid: lazy(() => import("@/pages/operations/LiveCameraGrid").then((m) => ({ default: m.default }))),
+  VehicleDetection: lazy(() => import("@/pages/operations/VehicleDetection").then((m) => ({ default: m.default }))),
   LiveMonitoring: lazy(() => import("@/pages/cameras/LiveMonitoring").then((m) => ({ default: m.default }))),
   NewSeizureEntry: lazy(() => import("@/pages/seizures/NewSeizureEntry").then((m) => ({ default: m.default }))),
   JcpTollPlazaEntry: lazy(() => import("@/pages/seizures/JcpTollPlazaEntry").then((m) => ({ default: m.default }))),

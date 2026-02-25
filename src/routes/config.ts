@@ -52,6 +52,7 @@ export const ROUTES = {
   OPERATIONS_DASHBOARD: "/operations-dashboard",
   ANALYTICS_DASHBOARD: "/analytics-dashboard",
   LIVE_CAMERA_GRID: "/analytics/live-camera-grid",
+  VEHICLE_DETECTION: "/analytics/vehicle-detection",
   LIVE_MONITORING: "/live-monitoring",
   CAMERA_MANAGEMENT: "/camera-management",
   OBJECT_DETECTION: "/object-detection",
@@ -293,6 +294,7 @@ export const NAV_SECTIONS: { title: string; items: (NavItem | NavGroup)[] }[] = 
         children: [
           { label: "Analytics Dashboard", href: ROUTES.ANALYTICS_DASHBOARD },
           { label: "Live Camera Grid", href: ROUTES.LIVE_CAMERA_GRID },
+          { label: "Vehicle Detection", href: ROUTES.VEHICLE_DETECTION },
           { label: "Reports", href: ROUTES.REPORTS },
           { label: "Predictive Insights", href: ROUTES.PREDICTIVE_INSIGHTS },
           { label: "Data Visualization", href: ROUTES.DATA_VISUALIZATION },
