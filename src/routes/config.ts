@@ -281,7 +281,6 @@ export const NAV_SECTIONS: { title: string; items: (NavItem | NavGroup)[] }[] = 
             label: "Integration",
             children: [
               { label: "WeBOC Sync", href: ROUTES.WEBOC_SYNC },
-              { label: "ASO Portal", href: ROUTES.ASO_PORTAL_SYNC },
               { label: "API Logs", href: ROUTES.API_LOGS },
             ],
           },
@@ -302,6 +301,15 @@ export const NAV_SECTIONS: { title: string; items: (NavItem | NavGroup)[] }[] = 
               { label: "Activity Logs", href: ROUTES.ACTIVITY_LOGS },
             ],
           },
+        ],
+      },
+      {
+        label: "Auction Management",
+        children: [
+          { label: "ASO Portal Sync", href: ROUTES.ASO_PORTAL_SYNC },
+          { label: "Bidding Management", href: ROUTES.BIDDING_MANAGEMENT },
+          { label: "Sale Completion", href: ROUTES.SALE_COMPLETION },
+          { label: "Revenue Reports", href: ROUTES.REVENUE_REPORTS },
         ],
       },
       {

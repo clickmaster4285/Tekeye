@@ -33,6 +33,7 @@ const PRIMARY_MENU_ICONS: Record<string, SidebarIconComponent> = {
   "Warehouse Management System": Package,
   Armory: ShieldCheck,
   "Litigation Management": Scale,
+  "Auction Management": Gavel,
   "AI Analytics System": Brain,
   "Human Resource Management": Users,
   "Human Resource Management System": Users,
