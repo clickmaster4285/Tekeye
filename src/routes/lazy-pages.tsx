@@ -36,6 +36,7 @@ export const PAGES = {
   VehicleTracking: lazy(() => import("@/pages/registration/VehicleTracking").then((m) => ({ default: m.default }))),
   ContractorPasses: lazy(() => import("@/pages/registration/ContractorPasses").then((m) => ({ default: m.default }))),
   CargoDeliveryLogs: lazy(() => import("@/pages/registration/CargoDeliveryLogs").then((m) => ({ default: m.default }))),
+  Armory: lazy(() => import("@/pages/armory/Armory").then((m) => ({ default: m.default }))),
   WarehouseSetup: lazy(() => import("@/pages/warehouse/WarehouseSetup").then((m) => ({ default: m.default }))),
   ZoneLocationManagement: lazy(() => import("@/pages/warehouse/ZoneLocationManagement").then((m) => ({ default: m.default }))),
   StorageAllocation: lazy(() => import("@/pages/warehouse/StorageAllocation").then((m) => ({ default: m.default }))),

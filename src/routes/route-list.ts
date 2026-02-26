@@ -37,6 +37,8 @@ export const DASHBOARD_ROUTES: { index?: true; path?: string; page: string }[] =
   { path: toChildPath(ROUTES.VEHICLE_TRACKING), page: "VehicleTracking" },
   { path: toChildPath(ROUTES.CONTRACTOR_PASSES), page: "ContractorPasses" },
   { path: toChildPath(ROUTES.CARGO_DELIVERY_LOGS), page: "CargoDeliveryLogs" },
+  // Armory
+  { path: toChildPath(ROUTES.ARMORY), page: "Armory" },
   // Warehouse
   { path: toChildPath(ROUTES.WAREHOUSE_SETUP), page: "WarehouseSetup" },
   { path: toChildPath(ROUTES.ZONE_LOCATION_MANAGEMENT), page: "ZoneLocationManagement" },

@@ -40,6 +40,9 @@ export const ROUTES = {
   CONTRACTOR_PASSES: "/contractor-passes",
   CARGO_DELIVERY_LOGS: "/cargo-delivery-logs",
 
+  // Armory
+  ARMORY: "/armory",
+
   // Warehouse
   WAREHOUSE_SETUP: "/warehouse-setup",
   ZONE_LOCATION_MANAGEMENT: "/zone-location-management",
@@ -206,6 +209,27 @@ export const NAV_SECTIONS: { title: string; items: (NavItem | NavGroup)[] }[] = 
         ],
       },
       {
+        label: "Armory",
+        children: [
+          { label: "Armory Dashboard", href: ROUTES.ARMORY },
+        ],
+      },
+      {
+        label: "Litigation Management",
+        children: [
+          {
+            label: "Cases",
+            children: [
+              { label: "FIR Registration", href: ROUTES.FIR_REGISTRATION },
+              { label: "Case File Creation", href: ROUTES.CASE_FILE_CREATION },
+              { label: "Court Proceedings", href: ROUTES.COURT_PROCEEDINGS },
+              { label: "Legal Documents", href: ROUTES.LEGAL_DOCUMENTS },
+              { label: "Case Status Tracking", href: ROUTES.CASE_STATUS_TRACKING },
+            ],
+          },
+        ],
+      },
+      {
         label: "Warehouse Management",
         children: [
           {
@@ -231,16 +255,6 @@ export const NAV_SECTIONS: { title: string; items: (NavItem | NavGroup)[] }[] = 
               { label: "Inventory Tracking", href: ROUTES.INVENTORY_TRACKING },
               { label: "Stock Reconciliation", href: ROUTES.STOCK_RECONCILIATION },
               { label: "Camera Integration", href: ROUTES.CAMERA_INTEGRATION },
-            ],
-          },
-          {
-            label: "Cases",
-            children: [
-              { label: "FIR Registration", href: ROUTES.FIR_REGISTRATION },
-              { label: "Case File Creation", href: ROUTES.CASE_FILE_CREATION },
-              { label: "Court Proceedings", href: ROUTES.COURT_PROCEEDINGS },
-              { label: "Legal Documents", href: ROUTES.LEGAL_DOCUMENTS },
-              { label: "Case Status Tracking", href: ROUTES.CASE_STATUS_TRACKING },
             ],
           },
           {
